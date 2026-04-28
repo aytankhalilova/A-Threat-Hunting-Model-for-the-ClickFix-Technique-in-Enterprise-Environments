@@ -1,0 +1,15 @@
+ModelScenarioId,ModelCategory,VariationCategory,DatasetScenario,LogEntryCount,ReportIds
+MV-01,Standard ClickFix Variation,Fake CAPTCHA,TP-01-FakeCAPTCHA,3,1a3d1fa7bc8960a923b8c1e9392456de|2369b584ff5e9ff0ff50bde4382567b8|fc3e058be0f3eab05cec4eb5edd96831
+MV-02,Standard ClickFix Variation,ClearFake,TP-05-ClearFake,3,68949b8d00af5b3a2812859a1337739e|e17f29e17028604649bc473fed7bf656|c34b9fbb8d4a75b8551ac8ea585a0afa
+MV-03,Standard ClickFix Variation,CrashFix - finger.exe,TP-08-CrashFix-finger,1,cd2372c22bffe17b532401fcf758dce2
+MV-04,Standard ClickFix Variation,DNS ClickFix,TP-11-DNSClickFix,2,33107475ca8622250b36e356339b77a8|1f652a87333ee3447dbf4bc1ffa623d0
+MV-05,Standard ClickFix Variation,TA427 Kimsuky - Schtask,TP-14-TA427-schtask,1,a74e02a9220b9ea98a0f9508dfe2c0a0
+MV-06,Standard ClickFix Variation,CrashFix - Run Key,TP-17-CrashFix-runkey,1,2f8c83e56e8d9644601bfbcbf0eebcce
+MV-07,Standard ClickFix Variation,Lazarus ClickFake Interview,TP-20-Lazarus-curl,4,ff69723d584fc85b2697384d801e8690|9e91a71c7374ccbfd78c57d3508850d3|1e0d02b5fe7402cddd83ad037066e289|4d470ed6a6663769e1d46f8221c50e41
+MV-08,Standard ClickFix Variation,FileFix,TP-29-FileFix,3,f26bcebf7def3b8eec0dfc3ab011b125|a3760c2d7b31dcdc40d91a8e1f44aa88|70000009b4e570ba7c3cc2bc0a1bebd3
+MV-09,Standard ClickFix Variation,TA450 MuddyWater,TP-26-TA450-MuddyWater,3,b652ae9938b5e89ac921057c3f05557c|390fecf5e8410a39f9012b9c6057153a|3772aa9715f39d39f27f3ad748907b6d
+MV-10,State-Sponsored,TA427 Kimsuky,TP-23-TA427-Kimsuky,3,6060b1ebe53e5f4c6c7e9a2c467f358b|232a5e8226996aabdaaf7529deeff82a|d2e76deb10b6a6622ac1d5ca4e5d8f12
+MV-11,State-Sponsored,TA450 MuddyWater,TP-27-TA450-MuddyWater,3,bdcbfffccdfba4e996cbdafb59bb8900|093b4d72ac8cdcaf2b633b189d7d1756|963a4333e58295dc75f1c654ae7cfd14
+MV-12,State-Sponsored,TA422 APT28,TP-31-TA422-APT28-1,3,3230a5399ec950b7111df1d69a80af6c|76928897093b7b78d05b828d4d6d4023|ea36e0abcbe0db8946c8ad8aeabc3591
+MV-13,False Positive,Benign Enterprise Activity,FP-01,1,27ef0a4b5fb2b838af73b3cf331e91f2
+MV-14,False Positive,Benign Enterprise Activity,FP-21,1,5e24296eb7363ad979a8226b5ced7017
