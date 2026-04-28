@@ -1,71 +1,110 @@
-# ClickFix Threat Hunting — Test Dataset
+# ClickFix Threat Hunting — Dataset
 
 ## Overview
 
-This repository contains the synthetic test dataset used to evaluate the KQL detection queries and validate the threat hunting model developed in the master's thesis *"Threat Hunting Model for ClickFix Technique in Enterprise Environments"* by Aytan Khalilova.
+This repository contains two synthetic datasets used in the master's thesis *"Threat Hunting Model for ClickFix Technique in Enterprise Environments"*: a rule-building dataset used to develop and tune the KQL detection queries, and a test dataset used to evaluate them. The two datasets are completely separate - they share no log entries, no devices, no users, no C2 infrastructure, and no command-line content.
 
-The dataset is synthetic — generated to match the Microsoft Defender for Endpoint (MDE) Advanced Hunting schema — because no publicly available dataset with real MDE telemetry exists. Real MDE exports contain enterprise PII and cannot be published. All command-line arguments in attack entries are sourced directly from the threat intelligence reports cited in the thesis.
+Both datasets are synthetic - generated to match the Microsoft Defender for Endpoint (MDE) Advanced Hunting schema - because no publicly available dataset with real MDE telemetry exists. Real MDE exports contain enterprise PII and cannot be published. All command-line arguments in attack entries are sourced directly from the threat intelligence reports cited in the thesis. 
+---
+
+## Repository Structure
+
+```
+├── build/                   # Used to develop and tune KQL queries
+│   ├── clickfix_rule_DeviceProcessEvents.csv
+│   ├── clickfix_rule_DeviceRegistryEvents.csv
+│   ├── clickfix_rule_DeviceNetworkEvents.csv
+│   ├── clickfix_rule_DeviceFileEvents.csv
+│   └── clickfix_rule_dataset_manifest.csv
+│
+└── test/                            # Used to evaluate KQL queries and validate model
+    ├── clickfix_DeviceProcessEvents.csv
+    ├── clickfix_DeviceRegistryEvents.csv
+    ├── clickfix_DeviceNetworkEvents.csv
+    ├── clickfix_DeviceFileEvents.csv
+    ├── clickfix_kql_test_manifest.csv
+    ├── clickfix_model_validation_manifest.csv
+    └── clickfix_artifact_recovery_manifest.csv
+```
 
 ---
 
-## Files
+## Rule-Building Dataset
+
+**Purpose:** Used to observe attack patterns and develop the seven KQL detection queries documented in Section 4.4 of the thesis.
+
+**Period:** February 2026 | **Domain:** PROD | **Devices:** PROD-WS-01x / PROD-LT-01x
 
 | File | Purpose | Rows |
 |---|---|---|
-| `clickfix_DeviceProcessEvents.csv` | Import into Sentinel as `DeviceProcessEvents_CL` | 121 |
-| `clickfix_DeviceRegistryEvents.csv` | Import into Sentinel as `DeviceRegistryEvents_CL` | 29 |
-| `clickfix_DeviceNetworkEvents.csv` | Import into Sentinel as `DeviceNetworkEvents_CL` | 28 |
-| `clickfix_DeviceFileEvents.csv` | Import into Sentinel as `DeviceFileEvents_CL` | 3 |
-| `clickfix_kql_test_manifest.csv` | Verify KQL query results — maps each ReportId to its Classification (TruePositive or Benign) | 181 |
-| `clickfix_model_validation_manifest.csv` | Verify model validation — maps each of the 14 model scenarios to its dataset entries via ReportId | 14 |
-| `clickfix_artifact_recovery_manifest.csv` | Verify artifact recovery rates — maps each ReportId to its ArtifactType per model scenario | 30 |
+| `clickfix_rule_DeviceProcessEvents.csv` | Import as `DeviceProcessEvents_CL` | 176 |
+| `clickfix_rule_DeviceRegistryEvents.csv` | Import as `DeviceRegistryEvents_CL` | 43 |
+| `clickfix_rule_DeviceNetworkEvents.csv` | Import as `DeviceNetworkEvents_CL` | 28 |
+| `clickfix_rule_DeviceFileEvents.csv` | Import as `DeviceFileEvents_CL` | 3 |
+| `clickfix_rule_dataset_manifest.csv` | Maps each ReportId to Scenario and Classification | 250 |
+
+**Composition: 250 total log entries**
+- 106 true positive log entries — attack scenarios covering all 9 endpoint-touching ClickFix variations and all 7 KQL query targets
+- 144 benign log entries — 144 unique legitimate enterprise activity scenarios
 
 ---
 
-## Dataset Composition
+## Test Dataset
 
-**Total: 181 log entries across 130 scenarios.**
+**Purpose:** Used to evaluate the KQL detection queries and validate the hunting model (Section 4.6.2).
 
-- **30 attack scenarios → 81 log entries** — each attack scenario generates between 1 and 4 correlated log entries across multiple tables, reflecting the multi-table join design of the KQL detection queries
-- **100 benign scenarios → 100 log entries** — each benign scenario produces one log entry representing legitimate enterprise activity
+**Period:** March 2026 | **Domain:** CORP | **Devices:** CORP-WS-00x / CORP-LT-00x
+
+| File | Purpose | Rows |
+|---|---|---|
+| `clickfix_DeviceProcessEvents.csv` | Import as `DeviceProcessEvents_CL` | 121 |
+| `clickfix_DeviceRegistryEvents.csv` | Import as `DeviceRegistryEvents_CL` | 29 |
+| `clickfix_DeviceNetworkEvents.csv` | Import as `DeviceNetworkEvents_CL` | 28 |
+| `clickfix_DeviceFileEvents.csv` | Import as `DeviceFileEvents_CL` | 3 |
+| `clickfix_kql_test_manifest.csv` | Verify KQL query results — Classification per ReportId | 181 |
+| `clickfix_model_validation_manifest.csv` | Verify model validation — 14 scenarios (MV-01 to MV-14) | 14 |
+| `clickfix_artifact_recovery_manifest.csv` | Verify artifact recovery rates — ArtifactType per ReportId | 30 |
+
+**Composition: 181 total log entries**
+- 81 true positive log entries — 30 attack scenarios covering all 9 endpoint-touching ClickFix variations
+- 100 benign log entries — 100 unique legitimate enterprise activity scenarios
+
+---
+
+
+## How to Import into Microsoft Sentinel
+
+Create custom log tables in your Sentinel workspace and upload each CSV. For full instructions refer to the official Microsoft documentation: [Collect logs from text files with Azure Monitor Agent and ingest to Microsoft Sentinel](https://learn.microsoft.com/en-us/azure/sentinel/connect-custom-logs-ama).
+
+| Build CSV File | Test CSV File | Sentinel Table Name |
+|---|---|---|
+| `clickfix_[rule_]DeviceProcessEvents.csv` | `clickfix_DeviceProcessEvents.csv` | `DeviceProcessEvents_CL` |
+| `clickfix_[rule_]DeviceRegistryEvents.csv` | `clickfix_DeviceRegistryEvents.csv` | `DeviceRegistryEvents_CL` |
+| `clickfix_[rule_]DeviceNetworkEvents.csv` | `clickfix_DeviceNetworkEvents.csv` | `DeviceNetworkEvents_CL` |
+| `clickfix_[rule_]DeviceFileEvents.csv` | `clickfix_DeviceFileEvents.csv` | `DeviceFileEvents_CL` |
 
 
 ---
 
-## How to Use
+## How to Verify Results
 
-### Step 1 — Import into Microsoft Sentinel
+### KQL Query Results
 
-Create four custom log tables in your Sentinel workspace and upload each CSV. For full instructions on creating custom log tables in Microsoft Sentinel, refer to the official Microsoft documentation: [Collect logs from text files with Azure Monitor Agent and ingest to Microsoft Sentinel](https://learn.microsoft.com/en-us/azure/sentinel/connect-custom-logs-ama).
-
-| CSV File | Sentinel Table Name |
-|---|---|
-| `clickfix_DeviceProcessEvents.csv` | `DeviceProcessEvents_CL` |
-| `clickfix_DeviceRegistryEvents.csv` | `DeviceRegistryEvents_CL` |
-| `clickfix_DeviceNetworkEvents.csv` | `DeviceNetworkEvents_CL` |
-| `clickfix_DeviceFileEvents.csv` | `DeviceFileEvents_CL` |
-
-Update the KQL queries from the thesis by replacing `DeviceProcessEvents` with `DeviceProcessEvents_CL` (and equivalently for the other three tables).
-
-### Step 2 — Verify KQL Query Results
-
-After running a query, take the `ReportId` from any result and look it up in `clickfix_kql_test_manifest.csv`:
+After running a query, look up the `ReportId` from any result in `clickfix_kql_test_manifest.csv`:
 
 | Column | Description |
 |---|---|
-| `ReportId` | Links the log entry to its classification |
-| `Table` | Which MDE table the entry belongs to |
+| `ReportId` | Links to the raw log entry |
+| `Table` | MDE table the entry belongs to |
 | `Scenario` | Scenario ID (TP-01, FP-21 etc.) |
 | `Classification` | TruePositive or Benign |
-| `DeviceName` | Device the entry belongs to |
+| `DeviceName` | Device name |
 | `AccountName` | User account |
 | `Timestamp` | Event timestamp |
 
-A result where `Classification = TruePositive` confirms the query correctly detected an attack scenario. A result where `Classification = Benign` is a false positive.
+### Model Validation Results
 
-### Step 3 — Verify Model Validation Results
-
-Use `clickfix_model_validation_manifest.csv` to verify the 14 model validation scenarios. Each scenario is identified by its `ModelScenarioId` (MV-01 through MV-14) and linked to its dataset entries via `ReportIds`.
+Use `clickfix_model_validation_manifest.csv` to verify the 14 model validation scenarios from Section 4.6.2:
 
 | Column | Description |
 |---|---|
@@ -73,21 +112,21 @@ Use `clickfix_model_validation_manifest.csv` to verify the 14 model validation s
 | `ModelCategory` | Standard ClickFix Variation, State-Sponsored, or False Positive |
 | `VariationCategory` | Specific ClickFix variation name |
 | `DatasetScenario` | Corresponding scenario ID in the dataset |
-| `LogEntryCount` | Number of log entries belonging to this scenario |
-| `ReportIds` | Pipe-separated ReportIds of all log entries for this scenario |
+| `LogEntryCount` | Number of log entries for this scenario |
+| `ReportIds` | Pipe-separated ReportIds of all log entries |
 
-### Step 4 — Verify Artifact Recovery Rates
+### Artifact Recovery Results
 
-Use `clickfix_artifact_recovery_manifest.csv` to verify the artifact recovery rates. Each row maps a `ReportId` to its `ArtifactType` for a specific model scenario — allowing independent verification of which artifact types were recoverable per scenario.
+Use `clickfix_artifact_recovery_manifest.csv` to verify artifact recovery rates from Section 4.6.2:
 
 | Column | Description |
 |---|---|
-| `ModelScenarioId` | MV-01 through MV-12 (proved and partially proved scenarios only) |
-| `DatasetScenario` | Corresponding scenario ID in the dataset |
-| `ReportId` | Links to the raw log entry in the table files |
-| `Table` | MDE table the entry belongs to |
+| `ModelScenarioId` | MV-01 through MV-12 |
+| `DatasetScenario` | Corresponding scenario ID |
+| `ReportId` | Links to the raw log entry |
+| `Table` | MDE table |
 | `ArtifactType` | Process Artifact, Registry Artifact, Network Artifact, or File Artifact |
-| `DeviceName` | Device the entry belongs to |
+| `DeviceName` | Device name |
 | `AccountName` | User account |
 | `Timestamp` | Event timestamp |
 
@@ -95,13 +134,13 @@ Use `clickfix_artifact_recovery_manifest.csv` to verify the artifact recovery ra
 
 ## Table Schemas
 
-### DeviceProcessEvents_CL (121 rows)
+### DeviceProcessEvents_CL
 
 | Column | Description |
 |---|---|
-| `Timestamp` | ISO 8601 event timestamp — all entries in March 2026 |
+| `Timestamp` | ISO 8601 event timestamp |
 | `DeviceId` | 40-character hex device identifier |
-| `DeviceName` | Corporate workstation name (CORP-WS-XXX / CORP-LT-XXX) |
+| `DeviceName` | Corporate workstation name |
 | `ActionType` | ProcessCreated |
 | `FileName` | Process binary filename |
 | `FolderPath` | Full path of the process binary |
@@ -114,11 +153,11 @@ Use `clickfix_artifact_recovery_manifest.csv` to verify the artifact recovery ra
 | `InitiatingProcessParentFileName` | Grandparent process filename |
 | `InitiatingProcessSHA1` | SHA1 hash of the parent binary |
 | `AccountName` | Username |
-| `AccountDomain` | Domain (CORP) |
+| `AccountDomain` | Domain |
 | `AccountSid` | Windows Security Identifier |
 | `ReportId` | Unique entry identifier — use to cross-reference manifests |
 
-### DeviceRegistryEvents_CL (29 rows)
+### DeviceRegistryEvents_CL
 
 | Column | Description |
 |---|---|
@@ -137,7 +176,7 @@ Use `clickfix_artifact_recovery_manifest.csv` to verify the artifact recovery ra
 | `AccountSid` | Windows Security Identifier |
 | `ReportId` | Unique entry identifier — use to cross-reference manifests |
 
-### DeviceNetworkEvents_CL (28 rows)
+### DeviceNetworkEvents_CL
 
 | Column | Description |
 |---|---|
@@ -160,7 +199,7 @@ Use `clickfix_artifact_recovery_manifest.csv` to verify the artifact recovery ra
 | `AccountSid` | Windows Security Identifier |
 | `ReportId` | Unique entry identifier — use to cross-reference manifests |
 
-### DeviceFileEvents_CL (3 rows)
+### DeviceFileEvents_CL
 
 | Column | Description |
 |---|---|
@@ -179,12 +218,17 @@ Use `clickfix_artifact_recovery_manifest.csv` to verify the artifact recovery ra
 | `AccountSid` | Windows Security Identifier |
 | `ReportId` | Unique entry identifier — use to cross-reference manifests |
 
+---
+
+## Dataset Integrity
+
+**Cross-Dataset:**
+-  Zero shared ReportIds between rule-building and test datasets
 
 ---
 
-
 ## Generation
-The dataset was generated by Claude Sonnet 4.6 (claude-sonnet-4-6) as part of the thesis research process. All timestamps are in March 2026. Command-line arguments in attack entries are sourced from the threat intelligence reports cited in the thesis. 
+Both dataset were generated by Claude Sonnet 4.6 (claude-sonnet-4-6) as part of the thesis research process. Command-line arguments in attack entries are sourced from the threat intelligence reports cited in the thesis. 
 
 ---
 
