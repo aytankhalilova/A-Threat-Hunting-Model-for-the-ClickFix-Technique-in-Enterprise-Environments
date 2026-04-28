@@ -5,6 +5,7 @@
 This repository contains two synthetic datasets used in the master's thesis *"Threat Hunting Model for ClickFix Technique in Enterprise Environments"*: a rule-building dataset used to develop and tune the KQL detection queries, and a test dataset used to evaluate them. The two datasets are completely separate - they share no log entries, no devices, no users, no C2 infrastructure, and no command-line content.
 
 Both datasets are synthetic - generated to match the Microsoft Defender for Endpoint (MDE) Advanced Hunting schema - because no publicly available dataset with real MDE telemetry exists. Real MDE exports contain enterprise PII and cannot be published. All command-line arguments in attack entries are sourced directly from the threat intelligence reports cited in the thesis. 
+
 ---
 
 ## Repository Structure
